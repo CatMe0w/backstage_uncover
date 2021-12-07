@@ -34,7 +34,6 @@ for i in range(1, MAX_PAGE + 1):
             break
 
     tree = etree.HTML(response.content)
-    print(response.content)
     for j in range(1, 31):
         title = tree.xpath(
             '//*[@id="container"]/div[2]/div[2]/table/tbody/tr[{}]/td[1]/article/div[2]/h1/a/@title'.format(j))[0]
