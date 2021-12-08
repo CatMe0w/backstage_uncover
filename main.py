@@ -7,6 +7,26 @@ MAX_PAGE = 1
 
 backstage_log = []
 
+cached_nicknames = {}
+
+
+def get_nickname(username):
+    if cached_nicknames.__contains__(username):
+        return cached_nicknames[username]
+    while True:
+        try:
+            nickname_response = requests.get(
+                'https://tieba.baidu.com/home/main?un=' + username)
+        except:
+            continue
+        else:
+            break
+    nickname_tree = etree.HTML(nickname_response.content)
+    nickname = nickname_tree.xpath('/html/head/title/text()')[0][:-3]
+    cached_nicknames.update({username, nickname})
+    return nickname
+
+
 cookies = {
     'BDUSS': BDUSS,
 }
@@ -40,9 +60,12 @@ for i in range(1, MAX_PAGE + 1):
         content_preview = tree.xpath(
             '//*[@id="container"]/div[2]/div[2]/table/tbody/tr[{}]/td[1]/article/div[2]/div[1]/text()'.format(j))[0]
         username = tree.xpath(
-            '//*[@id="container"]/div[2]/div[2]/table/tbody/tr[{}]/td[1]/article/div[1]/div[1]/a/text()'.format(j))[0]
-        nickname = tree.xpath(
-            '//*[@id="container"]/div[2]/div[2]/table/tbody/tr[{}]/td[1]/article/div[1]/div[2]/a/text()'.format(j))[0]
+            '//*[@id="container"]/div[2]/div[2]/table/tbody/tr[{}]/td[1]/article/div[1]/div[1]/a/text()'.format(j))[0][4:]
+        # nickname = tree.xpath(
+        #     '//*[@id="container"]/div[2]/div[2]/table/tbody/tr[{}]/td[1]/article/div[1]/div[2]/a/text()'.format(j))[0]
+        nickname = get_nickname(username)
+        # 从后台直接获取的昵称中，若该昵称含有emoji，该emoji将显示为一张图片，且存放在额外的标签中。
+        # 为了解决这个问题，需要访问该用户的用户页，从网页标题获取正常的emoji字符。
         post_time = tree.xpath(
             '//*[@id="container"]/div[2]/div[2]/table/tbody/tr[{}]/td[1]/article/div[1]/time/text()'.format(j))[0]
         operation = tree.xpath(
