@@ -1,4 +1,5 @@
 import re
+import datetime
 import requests
 from lxml import etree
 
@@ -26,6 +27,39 @@ def get_nickname(username):
     nickname = nickname_tree.xpath('/html/head/title/text()')[0][:-3]
     cached_nicknames.update({username, nickname})
     return nickname
+
+
+def process_post_time_raw(post_time_raw, post_id):
+    month = int(post_time_raw[:2])
+    day = int(post_time_raw[3:5])
+    hour = int(post_time_raw[7:9])
+    minute = int(post_time_raw[10:12])
+    p = int(post_id)
+    if p < 966676089:
+        year = 2010
+    elif p < 1347023954:
+        year = 2011
+    elif p < 2076654372:
+        year = 2012
+    elif p < 2790164985:
+        year = 2013
+    elif p < 3499710968:
+        year = 2014
+    elif p < 4243777598:
+        year = 2015
+    elif p < 4922225497:
+        year = 2016
+    elif p < 5499472409:
+        year = 2017
+    elif p < 5994564429:
+        year = 2018
+    elif p < 6421708311:
+        year = 2019
+    elif p < 7175996965:
+        year = 2020
+    else:
+        year = 2021
+    return datetime.datetime(year, month, day, hour, minute)
 
 
 cookies = {
@@ -69,8 +103,9 @@ for i in range(1, MAX_PAGE + 1):
         nickname = get_nickname(username)
         # 从后台直接获取的昵称中，若该昵称含有emoji，该emoji将显示为一张图片，且存放在额外的标签中。
         # 为了解决这个问题，需要访问该用户的用户页，从网页标题获取正常的emoji字符。
-        post_time = tree.xpath(
+        post_time_raw = tree.xpath(
             '//*[@id="container"]/div[2]/div[2]/table/tbody/tr[{}]/td[1]/article/div[1]/time/text()'.format(j))[0]
+        post_time = process_post_time_raw(post_time_raw, post_id)
         operation = tree.xpath(
             '//*[@id="container"]/div[2]/div[2]/table/tbody/tr[{}]/td[2]/span/text()'.format(j))[0]
         operator = tree.xpath(
