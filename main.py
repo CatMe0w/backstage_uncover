@@ -1,3 +1,4 @@
+import re
 import requests
 from lxml import etree
 
@@ -55,6 +56,8 @@ for i in range(1, MAX_PAGE + 1):
 
     tree = etree.HTML(response.content)
     for j in range(1, 31):
+        post_id = re.findall('.+?(?=\?)', tree.xpath(
+            '//*[@id="container"]/div[2]/div[2]/table/tbody/tr[{}]/td[1]/article/div[2]/h1/a/@href'.format(j))[0][3:])[0]
         title = tree.xpath(
             '//*[@id="container"]/div[2]/div[2]/table/tbody/tr[{}]/td[1]/article/div[2]/h1/a/@title'.format(j))[0]
         content_preview = tree.xpath(
@@ -77,6 +80,6 @@ for i in range(1, MAX_PAGE + 1):
         operation_time = tree.xpath(
             '//*[@id="container"]/div[2]/div[2]/table/tbody/tr[{}]/td[4]/text()[2]'.format(j))[0]
 
-        log_entry = {title, content_preview, username, nickname,
+        log_entry = {post_id, title, content_preview, username, nickname,
                      post_time, operation, operator, operation_date, operation_time}
         backstage_log.append(log_entry)
