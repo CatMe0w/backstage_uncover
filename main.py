@@ -30,6 +30,7 @@ def get_nickname(username):
 
 
 def process_post_time_raw(post_time_raw, post_id):
+    # post_time_raw 形如 'MM月dd日 HH:mm'
     month = int(post_time_raw[:2])
     day = int(post_time_raw[3:5])
     hour = int(post_time_raw[7:9])
@@ -59,6 +60,9 @@ def process_post_time_raw(post_time_raw, post_id):
         year = 2020
     else:
         year = 2021
+    # Oh, FUCK BAIDU!
+    # 这些数字是整个百度贴吧产品每年第一个帖子的id
+    # 百度没有为后台日志显示的发帖时间提供年份，因此不得不通过硬编码这些数字的方式来推算出正确的年份。
     return datetime.datetime(year, month, day, hour, minute)
 
 
