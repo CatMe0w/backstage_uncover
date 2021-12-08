@@ -12,6 +12,13 @@ backstage_log = []
 cached_nicknames = {}
 
 
+def get_post_id(url_params, thread_id):
+    pseudo_post_id = re.findall('(?<=#).*', url_params)[0]
+    if pseudo_post_id == thread_id:
+        return None
+    else:
+        return pseudo_post_id
+
 def get_nickname(username, nickname_raw):
     if username == nickname_raw:
         return username
@@ -118,11 +125,12 @@ for i in range(1, MAX_PAGE + 1):
             '//*[@id="container"]/div[2]/div[2]/table/tbody/tr[{}]/td[4]/text()[2]'.format(j))[0]
 
         thread_id = re.findall('.+?(?=\?)', url_params)[0]
+        post_id = get_post_id(url_params, thread_id)
         nickname = get_nickname(username, nickname_raw)
         # 从后台直接获取的昵称中，若该昵称含有emoji，该emoji将显示为一张图片，且存放在额外的标签中。
         # 为了解决这个问题，需要访问该用户的用户页，从网页标题获取正常的emoji字符。
         post_time = get_post_time(post_time_raw, thread_id)
 
-        log_entry = {thread_id, title, content_preview, username, nickname,
+        log_entry = {thread_id, post_id, title, content_preview, username, nickname,
                      post_time, operation, operator, operation_date, operation_time}
         backstage_log.append(log_entry)
