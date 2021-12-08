@@ -127,7 +127,7 @@ for i in range(1, MAX_PAGE + 1):
         thread_id = re.findall('.+?(?=\?)', url_params)[0]
         post_id = get_post_id(url_params, thread_id)
         nickname = get_nickname(username, nickname_raw)
-        # 从后台直接获取的昵称中，若该昵称含有emoji，该emoji将显示为一张图片，且存放在额外的标签中。
+        # 从后台直接获取的昵称中，若该昵称含有emoji，该emoji将显示为一张图片，且存放在另外的标签中。
         # 为了解决这个问题，需要访问该用户的用户页，从网页标题获取正常的emoji字符。
         post_time = get_post_time(post_time_raw, thread_id)
 
