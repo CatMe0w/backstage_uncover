@@ -39,7 +39,7 @@ def get_post_time(post_time_raw, thread_id):
     minute = int(post_time_raw[10:12])
     p = int(thread_id)
     if p < 966676089:
-        year = 2010
+        raise NotImplementedError
     elif p < 1347023954:
         year = 2011
     elif p < 2076654372:
