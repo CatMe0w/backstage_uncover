@@ -29,13 +29,13 @@ def get_nickname(username):
     return nickname
 
 
-def process_post_time_raw(post_time_raw, post_id):
+def get_post_time(post_time_raw, thread_id):
     # post_time_raw 形如 'MM月dd日 HH:mm'
     month = int(post_time_raw[:2])
     day = int(post_time_raw[3:5])
     hour = int(post_time_raw[7:9])
     minute = int(post_time_raw[10:12])
-    p = int(post_id)
+    p = int(thread_id)
     if p < 966676089:
         year = 2010
     elif p < 1347023954:
@@ -94,8 +94,9 @@ for i in range(1, MAX_PAGE + 1):
 
     tree = etree.HTML(response.content)
     for j in range(1, 31):
-        post_id = re.findall('.+?(?=\?)', tree.xpath(
-            '//*[@id="container"]/div[2]/div[2]/table/tbody/tr[{}]/td[1]/article/div[2]/h1/a/@href'.format(j))[0][3:])[0]
+        url_params = tree.xpath(
+            '//*[@id="container"]/div[2]/div[2]/table/tbody/tr[{}]/td[1]/article/div[2]/h1/a/@href'.format(j))[0][3:]
+        thread_id = re.findall('.+?(?=\?)', url_params)[0]
         title = tree.xpath(
             '//*[@id="container"]/div[2]/div[2]/table/tbody/tr[{}]/td[1]/article/div[2]/h1/a/@title'.format(j))[0]
         content_preview = tree.xpath(
@@ -109,7 +110,7 @@ for i in range(1, MAX_PAGE + 1):
         # 为了解决这个问题，需要访问该用户的用户页，从网页标题获取正常的emoji字符。
         post_time_raw = tree.xpath(
             '//*[@id="container"]/div[2]/div[2]/table/tbody/tr[{}]/td[1]/article/div[1]/time/text()'.format(j))[0]
-        post_time = process_post_time_raw(post_time_raw, post_id)
+        post_time = get_post_time(post_time_raw, thread_id)
         operation = tree.xpath(
             '//*[@id="container"]/div[2]/div[2]/table/tbody/tr[{}]/td[2]/span/text()'.format(j))[0]
         operator = tree.xpath(
@@ -119,6 +120,6 @@ for i in range(1, MAX_PAGE + 1):
         operation_time = tree.xpath(
             '//*[@id="container"]/div[2]/div[2]/table/tbody/tr[{}]/td[4]/text()[2]'.format(j))[0]
 
-        log_entry = {post_id, title, content_preview, username, nickname,
+        log_entry = {thread_id, title, content_preview, username, nickname,
                      post_time, operation, operator, operation_date, operation_time}
         backstage_log.append(log_entry)
