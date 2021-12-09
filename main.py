@@ -27,14 +27,14 @@ def get_nickname(username, nickname_raw):
     while True:
         try:
             nickname_response = requests.get(
-                'https://tieba.baidu.com/home/main?un=' + username)
+                'https://tieba.baidu.com/home/main?un=' + username, headers=headers)
         except:
             continue
         else:
             break
     nickname_tree = etree.HTML(nickname_response.content)
     nickname = nickname_tree.xpath('/html/head/title/text()')[0][:-3]
-    cached_nicknames.update({username, nickname})
+    cached_nicknames.update({username: nickname})
     return nickname
 
 
@@ -110,9 +110,9 @@ for i in range(1, MAX_PAGE + 1):
         content_preview = tree.xpath(
             '//*[@id="container"]/div[2]/div[2]/table/tbody/tr[{}]/td[1]/article/div[2]/div[1]/text()'.format(j))[0]
         username = tree.xpath(
-            '//*[@id="container"]/div[2]/div[2]/table/tbody/tr[{}]/td[1]/article/div[1]/div[1]/a/text()'.format(j))[0][4:]
+            '//*[@id="container"]/div[2]/div[2]/table/tbody/tr[{}]/td[1]/article/div[1]/div[1]/a/text()'.format(j))[0][5:]
         nickname_raw = tree.xpath(
-            '//*[@id="container"]/div[2]/div[2]/table/tbody/tr[{}]/td[1]/article/div[1]/div[2]/a/text()'.format(j))[0][3:]
+            '//*[@id="container"]/div[2]/div[2]/table/tbody/tr[{}]/td[1]/article/div[1]/div[2]/a/text()'.format(j))[0][4:]
         post_time_raw = tree.xpath(
             '//*[@id="container"]/div[2]/div[2]/table/tbody/tr[{}]/td[1]/article/div[1]/time/text()'.format(j))[0]
         operation = tree.xpath(
