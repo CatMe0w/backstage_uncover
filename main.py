@@ -105,7 +105,8 @@ for i in range(1, MAX_PAGE + 1):
         else:
             break
 
-    tree = etree.HTML(response.content)
+    content = response.content.decode('gbk')
+    tree = etree.HTML(content)
     for j in range(1, 31):
         url_params = tree.xpath(
             '//*[@id="container"]/div[2]/div[2]/table/tbody/tr[{}]/td[1]/article/div[2]/h1/a/@href'.format(j))[0][3:]
