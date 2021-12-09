@@ -75,6 +75,10 @@ def get_post_time(post_time_raw, thread_id):
     return datetime.datetime(year, month, day, hour, minute)
 
 
+def get_operation_time(operation_date_raw, operation_time_raw):
+    return datetime.datetime.strptime(operation_date_raw + ' ' + operation_time_raw, '%Y-%m-%d %H:%M')
+
+
 cookies = {
     'BDUSS': BDUSS,
 }
@@ -119,9 +123,9 @@ for i in range(1, MAX_PAGE + 1):
             '//*[@id="container"]/div[2]/div[2]/table/tbody/tr[{}]/td[2]/span/text()'.format(j))[0]
         operator = tree.xpath(
             '//*[@id="container"]/div[2]/div[2]/table/tbody/tr[{}]/td[3]/a/text()'.format(j))[0]
-        operation_date = tree.xpath(
+        operation_date_raw = tree.xpath(
             '//*[@id="container"]/div[2]/div[2]/table/tbody/tr[{}]/td[4]/text()[1]'.format(j))[0]
-        operation_time = tree.xpath(
+        operation_time_raw = tree.xpath(
             '//*[@id="container"]/div[2]/div[2]/table/tbody/tr[{}]/td[4]/text()[2]'.format(j))[0]
 
         thread_id = re.findall('.+?(?=\?)', url_params)[0]
@@ -130,7 +134,8 @@ for i in range(1, MAX_PAGE + 1):
         # 从后台直接获取的昵称中，若该昵称含有emoji，该emoji将显示为一张图片，且存放在另外的标签中。
         # 为了解决这个问题，需要访问该用户的用户页，从网页标题获取正常的emoji字符。
         post_time = get_post_time(post_time_raw, thread_id)
+        operation_time = get_operation_time(operation_date_raw,operation_time_raw)
 
         log_entry = {thread_id, post_id, title, content_preview, username, nickname,
-                     post_time, operation, operator, operation_date, operation_time}
+                     post_time, operation, operator, operation_time}
         backstage_log.append(log_entry)
