@@ -19,19 +19,23 @@ def get_post_id(url_params, thread_id):
     else:
         return pseudo_post_id
 
+
 def get_nickname(username, nickname_raw):
     if username == nickname_raw:
         return username
     if cached_nicknames.__contains__(username):
         return cached_nicknames[username]
-    while True:
-        try:
-            nickname_response = requests.get(
-                'https://tieba.baidu.com/home/main?un=' + username, headers=headers)
-        except:
-            continue
-        else:
-            break
+
+    if nickname_raw == '--':
+        return None
+    try:
+        nickname_response = requests.get(
+            'https://tieba.baidu.com/home/main?un=' + username, headers=headers)
+    except:
+        return None
+    # 若为None，代表该用户已被百度屏蔽，或是使用IP发帖的匿名用户
+    # 离谱的来了，2019年之后哪来的匿名用户？我到底要为这个垃圾产品补充多少的edge case处理？
+
     nickname_tree = etree.HTML(nickname_response.content)
     nickname = nickname_tree.xpath('/html/head/title/text()')[0][:-3]
     cached_nicknames.update({username: nickname})
@@ -135,7 +139,8 @@ for i in range(1, MAX_PAGE + 1):
         # 从后台直接获取的昵称中，若该昵称含有emoji，该emoji将显示为一张图片，且存放在另外的标签中。
         # 为了解决这个问题，需要访问该用户的用户页，从网页标题获取正常的emoji字符。
         post_time = get_post_time(post_time_raw, thread_id)
-        operation_time = get_operation_time(operation_date_raw,operation_time_raw)
+        operation_time = get_operation_time(
+            operation_date_raw, operation_time_raw)
 
         log_entry = {thread_id, post_id, title, content_preview, username, nickname,
                      post_time, operation, operator, operation_time}
