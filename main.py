@@ -112,29 +112,33 @@ for i in range(1, MAX_PAGE + 1):
     content = response.content.decode('gbk')
     tree = etree.HTML(content)
     for j in range(1, 31):
-        url_params = tree.xpath(
-            '//*[@id="container"]/div[2]/div[2]/table/tbody/tr[{}]/td[1]/article/div[2]/h1/a/@href'.format(j))[0][3:]
-        title = tree.xpath(
-            '//*[@id="container"]/div[2]/div[2]/table/tbody/tr[{}]/td[1]/article/div[2]/h1/a/@title'.format(j))[0]
-        content_preview = tree.xpath(
-            '//*[@id="container"]/div[2]/div[2]/table/tbody/tr[{}]/td[1]/article/div[2]/div[1]/text()'.format(j))[0]
-        media = tree.xpath(
-            '//*[@id="container"]/div[2]/div[2]/table/tbody/tr[{}]/td[1]/article/div[2]/div[2]/ul[1]/li/a/@href'.format(j))
-        username = tree.xpath(
-            '//*[@id="container"]/div[2]/div[2]/table/tbody/tr[{}]/td[1]/article/div[1]/div[1]/a/text()'.format(j))[0][5:]
-        nickname_raw = tree.xpath(
-            '//*[@id="container"]/div[2]/div[2]/table/tbody/tr[{}]/td[1]/article/div[1]/div[2]/a/text()'.format(j))[0][4:]
-        post_time_raw = tree.xpath(
-            '//*[@id="container"]/div[2]/div[2]/table/tbody/tr[{}]/td[1]/article/div[1]/time/text()'.format(j))[0]
-        operation = tree.xpath(
-            '//*[@id="container"]/div[2]/div[2]/table/tbody/tr[{}]/td[2]/span/text()'.format(j))[0]
-        operator = tree.xpath(
-            '//*[@id="container"]/div[2]/div[2]/table/tbody/tr[{}]/td[3]/a/text()'.format(j))[0]
-        operation_date_raw = tree.xpath(
-            '//*[@id="container"]/div[2]/div[2]/table/tbody/tr[{}]/td[4]/text()[1]'.format(j))[0]
-        operation_time_raw = tree.xpath(
-            '//*[@id="container"]/div[2]/div[2]/table/tbody/tr[{}]/td[4]/text()[2]'.format(j))[0]
-
+        try:
+            url_params = tree.xpath(
+                '//*[@id="container"]/div[2]/div[2]/table/tbody/tr[{}]/td[1]/article/div[2]/h1/a/@href'.format(j))[0][3:]
+            title = tree.xpath(
+                '//*[@id="container"]/div[2]/div[2]/table/tbody/tr[{}]/td[1]/article/div[2]/h1/a/@title'.format(j))[0]
+            content_preview = tree.xpath(
+                '//*[@id="container"]/div[2]/div[2]/table/tbody/tr[{}]/td[1]/article/div[2]/div[1]/text()'.format(j))[0][12:]
+            media_list = tree.xpath(
+                '//*[@id="container"]/div[2]/div[2]/table/tbody/tr[{}]/td[1]/article/div[2]/div[2]/ul[1]/li/a/@href'.format(j))
+            username = tree.xpath(
+                '//*[@id="container"]/div[2]/div[2]/table/tbody/tr[{}]/td[1]/article/div[1]/div[1]/a/text()'.format(j))[0][5:]
+            nickname_raw = tree.xpath(
+                '//*[@id="container"]/div[2]/div[2]/table/tbody/tr[{}]/td[1]/article/div[1]/div[2]/a/text()'.format(j))[0][4:]
+            post_time_raw = tree.xpath(
+                '//*[@id="container"]/div[2]/div[2]/table/tbody/tr[{}]/td[1]/article/div[1]/time/text()'.format(j))[0]
+            operation = tree.xpath(
+                '//*[@id="container"]/div[2]/div[2]/table/tbody/tr[{}]/td[2]/span/text()'.format(j))[0]
+            operator = tree.xpath(
+                '//*[@id="container"]/div[2]/div[2]/table/tbody/tr[{}]/td[3]/a/text()'.format(j))[0]
+            operation_date_raw = tree.xpath(
+                '//*[@id="container"]/div[2]/div[2]/table/tbody/tr[{}]/td[4]/text()[1]'.format(j))[0]
+            operation_time_raw = tree.xpath(
+                '//*[@id="container"]/div[2]/div[2]/table/tbody/tr[{}]/td[4]/text()[2]'.format(j))[0]
+        except IndexError:
+            continue
+        # 正常情况下，一页日志共有30项记录，但个别页可能出现少于30项的情况
+    
         thread_id = re.findall('.+?(?=\?)', url_params)[0]
         post_id = get_post_id(url_params, thread_id)
         nickname = get_nickname(username, nickname_raw)
@@ -144,6 +148,6 @@ for i in range(1, MAX_PAGE + 1):
         operation_time = get_operation_time(
             operation_date_raw, operation_time_raw)
 
-        log_entry = {thread_id, post_id, title, content_preview, media, username, nickname,
-                     post_time, operation, operator, operation_time}
+        log_entry = [thread_id, post_id, title, content_preview, media_list, username, nickname,
+                     post_time, operation, operator, operation_time]
         backstage_log.append(log_entry)
