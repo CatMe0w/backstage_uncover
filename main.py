@@ -5,11 +5,13 @@ from lxml import etree
 
 TIEBA_NAME = ''
 BDUSS = ''
-MAX_PAGE = 1
+MAX_PAGE_POSTS = 1
 MAX_PAGE_USERS = 1
+MAX_PAGE_BAWU = 1  # 百度的HTML中，原文如此。指“吧务”（人事变动）日志。
 
 backstage_log_posts = []
 backstage_log_users = []
+backstage_log_bawu = []
 
 
 def get_post_id(url_params, thread_id):
@@ -158,3 +160,39 @@ for i in range(1, MAX_PAGE_USERS + 1):
         log_entry = [avatar, username, operation,
                      duration, operator, operation_time]
         backstage_log_users.append(log_entry)
+
+
+for i in range(1, MAX_PAGE_BAWU + 1):
+    params = (
+        ('stype', ''),
+        ('svalue', ''),
+        ('begin', ''),
+        ('end', ''),
+        ('op_type', ''),
+        ('word', TIEBA_NAME),
+        ('pn', str(i)),
+    )
+
+    response = requests.get('http://tieba.baidu.com/bawu2/platform/listBawuLog',
+                            headers=headers, params=params, cookies=cookies, verify=False)
+
+    content = response.content.decode('gbk')
+    tree = etree.HTML(content)
+    for j in range(1, 31):
+        try:
+            avatar = tree.xpath(
+                '//*[@id="dataTable"]/tbody/tr[{}]/td[1]/a/img/@src'.format(j))[0]
+            username = tree.xpath(
+                '//*[@id="dataTable"]/tbody/tr[{}]/td[1]/a/text()'.format(j))[0][32:]
+            operation = tree.xpath(
+                '//*[@id="dataTable"]/tbody/tr[{}]/td[2]/text()'.format(j))[0]
+            operator = tree.xpath(
+                '//*[@id="dataTable"]/tbody/tr[{}]/td[3]/a/text()'.format(j))[0]
+            operation_time = tree.xpath(
+                '//*[@id="dataTable"]/tbody/tr[{}]/td[4]/text()'.format(j))[0]
+        except IndexError:
+            continue
+        # 同上
+
+        log_entry = [avatar, username, operation, operator, operation_time]
+        backstage_log_bawu.append(log_entry)
