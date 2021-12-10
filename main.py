@@ -59,10 +59,6 @@ def get_post_time(post_time_raw, thread_id):
     return datetime.datetime(year, month, day, hour, minute)
 
 
-def get_operation_time(operation_date_raw, operation_time_raw):
-    return datetime.datetime.strptime(operation_date_raw + ' ' + operation_time_raw, '%Y-%m-%d %H:%M')
-
-
 cookies = {
     'BDUSS': BDUSS,
 }
@@ -118,8 +114,7 @@ for i in range(1, MAX_PAGE_POSTS + 1):
         thread_id = re.findall('.+?(?=\?)', url_params)[0]
         post_id = get_post_id(url_params, thread_id)
         post_time = get_post_time(post_time_raw, thread_id)
-        operation_time = get_operation_time(
-            operation_date_raw, operation_time_raw)
+        operation_time = operation_date_raw + ' ' + operation_time_raw
 
         log_entry = [thread_id, post_id, title, content_preview, media_list, username,
                      post_time, operation, operator, operation_time]
