@@ -82,6 +82,8 @@ for i in range(1, MAX_PAGE_POSTS + 1):
     )
     response = requests.get('http://tieba.baidu.com/bawu2/platform/listPostLog',
                             headers=headers, params=params, cookies=cookies, verify=False)
+    with open('./posts/{}.html'.format(i), 'wb') as f:
+        f.write(response.content)
 
     content = response.content.decode('gbk')
     tree = etree.HTML(content)
@@ -136,6 +138,8 @@ for i in range(1, MAX_PAGE_USERS + 1):
 
     response = requests.get('http://tieba.baidu.com/bawu2/platform/listUserLog',
                             headers=headers, params=params, cookies=cookies, verify=False)
+    with open('./users/{}.html'.format(i), 'wb') as f:
+        f.write(response.content)
 
     content = response.content.decode('gbk')
     tree = etree.HTML(content)
@@ -175,6 +179,8 @@ for i in range(1, MAX_PAGE_BAWU + 1):
 
     response = requests.get('http://tieba.baidu.com/bawu2/platform/listBawuLog',
                             headers=headers, params=params, cookies=cookies, verify=False)
+    with open('./bawu/{}.html'.format(i), 'wb') as f:
+        f.write(response.content)
 
     content = response.content.decode('gbk')
     tree = etree.HTML(content)
