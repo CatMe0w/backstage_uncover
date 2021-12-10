@@ -118,6 +118,8 @@ for i in range(1, MAX_PAGE + 1):
             '//*[@id="container"]/div[2]/div[2]/table/tbody/tr[{}]/td[1]/article/div[2]/h1/a/@title'.format(j))[0]
         content_preview = tree.xpath(
             '//*[@id="container"]/div[2]/div[2]/table/tbody/tr[{}]/td[1]/article/div[2]/div[1]/text()'.format(j))[0]
+        media = tree.xpath(
+            '//*[@id="container"]/div[2]/div[2]/table/tbody/tr[{}]/td[1]/article/div[2]/div[2]/ul[1]/li/a/@href'.format(j))
         username = tree.xpath(
             '//*[@id="container"]/div[2]/div[2]/table/tbody/tr[{}]/td[1]/article/div[1]/div[1]/a/text()'.format(j))[0][5:]
         nickname_raw = tree.xpath(
@@ -142,6 +144,6 @@ for i in range(1, MAX_PAGE + 1):
         operation_time = get_operation_time(
             operation_date_raw, operation_time_raw)
 
-        log_entry = {thread_id, post_id, title, content_preview, username, nickname,
+        log_entry = {thread_id, post_id, title, content_preview, media, username, nickname,
                      post_time, operation, operator, operation_time}
         backstage_log.append(log_entry)
