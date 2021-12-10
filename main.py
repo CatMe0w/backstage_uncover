@@ -1,6 +1,8 @@
 import re
+import time
 import datetime
 import requests
+from random import randint
 from lxml import etree
 
 TIEBA_NAME = ''
@@ -26,9 +28,12 @@ def get_nickname(username, nickname_raw):
     if cached_nicknames.__contains__(username):
         return cached_nicknames[username]
 
-    if nickname_raw == '--':
+    if nickname_raw == '--': # 已注销用户
+        return None
+    if nickname_raw[:4] == '百度用户': # 已屏蔽用户，通常是爆吧机器人
         return None
     try:
+        time.sleep(randint(1500, 2500) / 1000)
         nickname_response = requests.get(
             'https://tieba.baidu.com/home/main?un=' + username, headers=headers)
     except:
