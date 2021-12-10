@@ -6,8 +6,10 @@ from lxml import etree
 TIEBA_NAME = ''
 BDUSS = ''
 MAX_PAGE = 1
+MAX_PAGE_USERS = 1
 
-backstage_log = []
+backstage_log_posts = []
+backstage_log_users = []
 
 
 def get_post_id(url_params, thread_id):
@@ -66,7 +68,7 @@ headers = {
     'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/96.0.4664.45 Safari/537.36',
 }
 
-for i in range(1, MAX_PAGE + 1):
+for i in range(1, MAX_PAGE_POSTS + 1):
     params = (
         ('stype', ''),
         ('svalue', ''),
@@ -117,4 +119,42 @@ for i in range(1, MAX_PAGE + 1):
 
         log_entry = [thread_id, post_id, title, content_preview, media_list, username,
                      post_time, operation, operator, operation_time]
-        backstage_log.append(log_entry)
+        backstage_log_posts.append(log_entry)
+
+for i in range(1, MAX_PAGE_USERS + 1):
+    params = (
+        ('stype', ''),
+        ('svalue', ''),
+        ('begin', ''),
+        ('end', ''),
+        ('op_type', ''),
+        ('word', TIEBA_NAME),
+        ('pn', str(i)),
+    )
+
+    response = requests.get('http://tieba.baidu.com/bawu2/platform/listUserLog',
+                            headers=headers, params=params, cookies=cookies, verify=False)
+
+    content = response.content.decode('gbk')
+    tree = etree.HTML(content)
+    for j in range(1, 31):
+        try:
+            avatar = tree.xpath(
+                '//*[@id="dataTable"]/tbody/tr[{}]/td[1]/a/img/@src'.format(j))[0]
+            username = tree.xpath(
+                '//*[@id="dataTable"]/tbody/tr[{}]/td[1]/a/text()'.format(j))[0][36:]
+            operation = tree.xpath(
+                '//*[@id="dataTable"]/tbody/tr[{}]/td[3]/text()'.format(j))[0]
+            duration = tree.xpath(
+                '//*[@id="dataTable"]/tbody/tr[{}]/td[4]/text()'.format(j))[0][60:-28]  # 这么阴间的HTML到底是怎么产生的？
+            operator = tree.xpath(
+                '//*[@id="dataTable"]/tbody/tr[{}]/td[5]/a/text()'.format(j))[0]
+            operation_time = tree.xpath(
+                '//*[@id="dataTable"]/tbody/tr[{}]/td[6]/text()'.format(j))[0]
+        except IndexError:
+            continue
+        # 同上
+
+        log_entry = [avatar, username, operation,
+                     duration, operator, operation_time]
+        backstage_log_users.append(log_entry)
