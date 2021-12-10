@@ -1,6 +1,7 @@
 import re
 import requests
 from lxml import etree
+import sqlite3
 
 TIEBA_NAME = ''
 BDUSS = ''
@@ -8,9 +9,40 @@ MAX_PAGE_POSTS = 1
 MAX_PAGE_USERS = 1
 MAX_PAGE_BAWU = 1  # 百度的HTML中，原文如此。指“吧务”（人事变动）日志。
 
-backstage_log_posts = []
-backstage_log_users = []
-backstage_log_bawu = []
+conn = sqlite3.connect('uncover.db')
+db = conn.cursor()
+db.execute('''
+    create table posts(
+    entry_id numeric primary key not null,
+    thread_id numeric not null, 
+    post_id numeric ,
+    title text not null,
+    content_preview text,
+    media text,
+    username text not null,
+    post_time text not null,
+    operation text not null,
+    operator text not null,
+    operation_time text not null);
+
+    create table users(
+    entry_id numeric primary key not null,
+    avatar text not null,
+    username text not null,
+    operation text not null,
+    duration text not null,
+    operator text not null,
+    operation_time text not null);
+
+    create table bawu(
+    entry_id numeric primary key not null,
+    avatar text not null,
+    username text not null,
+    operation text not null,
+    operator text not null,
+    operation_time text not null);
+''')
+conn.commit()
 
 
 def get_post_id(url_params, thread_id):
@@ -66,6 +98,7 @@ headers = {
 }
 
 for i in range(1, MAX_PAGE_POSTS + 1):
+    entry_id = 1
     params = (
         ('stype', ''),
         ('svalue', ''),
@@ -115,11 +148,13 @@ for i in range(1, MAX_PAGE_POSTS + 1):
         post_time = get_post_time(post_time_raw, thread_id)
         operation_time = operation_date_raw + ' ' + operation_time_raw
 
-        log_entry = [thread_id, post_id, title, content_preview, media_list, username,
-                     post_time, operation, operator, operation_time]
-        backstage_log_posts.append(log_entry)
+        db.execute('insert into posts values(?,?,?,?,?,?,?,?,?,?,?)',
+                  (entry_id, thread_id, post_id, title, content_preview, media_list, username, post_time, operation, operator, operation_time))
+        entry_id += 1
+    conn.commit()
 
 for i in range(1, MAX_PAGE_USERS + 1):
+    entry_id = 1
     params = (
         ('stype', ''),
         ('svalue', ''),
@@ -155,12 +190,14 @@ for i in range(1, MAX_PAGE_USERS + 1):
             continue
         # 同上
 
-        log_entry = [avatar, username, operation,
-                     duration, operator, operation_time]
-        backstage_log_users.append(log_entry)
+        db.execute('insert into users values(?,?,?,?,?,?,?)',
+                  (entry_id, avatar, username, operation, duration, operator, operation_time))
+        entry_id += 1
+    conn.commit()
 
 
 for i in range(1, MAX_PAGE_BAWU + 1):
+    entry_id = 1
     params = (
         ('stype', ''),
         ('svalue', ''),
@@ -194,5 +231,9 @@ for i in range(1, MAX_PAGE_BAWU + 1):
             continue
         # 同上
 
-        log_entry = [avatar, username, operation, operator, operation_time]
-        backstage_log_bawu.append(log_entry)
+        db.execute('insert into bawu values(?,?,?,?,?,?)',
+                  (entry_id, avatar, username, operation, operator, operation_time))
+        entry_id += 1
+    conn.commit()
+
+conn.close()
