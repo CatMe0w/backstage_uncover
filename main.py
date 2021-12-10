@@ -76,14 +76,8 @@ for i in range(1, MAX_PAGE + 1):
         ('word', TIEBA_NAME),
         ('pn', str(i)),
     )
-    while True:
-        try:
-            response = requests.get('http://tieba.baidu.com/bawu2/platform/listPostLog',
-                                    headers=headers, params=params, cookies=cookies, verify=False)
-        except:
-            continue
-        else:
-            break
+    response = requests.get('http://tieba.baidu.com/bawu2/platform/listPostLog',
+                            headers=headers, params=params, cookies=cookies, verify=False)
 
     content = response.content.decode('gbk')
     tree = etree.HTML(content)
@@ -114,7 +108,7 @@ for i in range(1, MAX_PAGE + 1):
         except IndexError:
             continue
         # 正常情况下，一页日志共有30项记录，但个别页可能出现少于30项的情况
-    
+
         thread_id = re.findall('.+?(?=\?)', url_params)[0]
         post_id = get_post_id(url_params, thread_id)
         post_time = get_post_time(post_time_raw, thread_id)
