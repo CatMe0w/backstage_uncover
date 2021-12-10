@@ -1,5 +1,4 @@
 import re
-import datetime
 import requests
 from lxml import etree
 
@@ -56,7 +55,7 @@ def get_post_time(post_time_raw, thread_id):
     # Oh, FUCK BAIDU!
     # 这些数字是整个百度贴吧产品每年第一个帖子的id
     # 百度没有为后台日志显示的发帖时间提供年份，因此不得不通过硬编码这些数字的方式来推算出正确的年份。
-    return datetime.datetime(year, month, day, hour, minute)
+    return '{}-{}-{} {}:{}'.format(year, month, day, hour, minute)
 
 
 cookies = {
