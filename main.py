@@ -1,8 +1,6 @@
 import re
-import time
 import datetime
 import requests
-from random import randint
 from lxml import etree
 
 TIEBA_NAME = ''
@@ -11,8 +9,6 @@ MAX_PAGE = 1
 
 backstage_log = []
 
-cached_nicknames = {}
-
 
 def get_post_id(url_params, thread_id):
     pseudo_post_id = re.findall('(?<=#).*', url_params)[0]
@@ -20,33 +16,6 @@ def get_post_id(url_params, thread_id):
         return None
     else:
         return pseudo_post_id
-
-
-def get_nickname(username, nickname_raw):
-    if username == nickname_raw:
-        return username
-    if cached_nicknames.__contains__(username):
-        return cached_nicknames[username]
-
-    if nickname_raw == '--': # 已注销用户
-        return None
-    if nickname_raw[:4] == '百度用户': # 已屏蔽用户，通常是爆吧机器人
-        return None
-    try:
-        time.sleep(randint(1500, 2500) / 1000)
-        nickname_response = requests.get(
-            'https://tieba.baidu.com/home/main?un=' + username, headers=headers)
-    except:
-        return None
-    # 若为None，代表该用户已被百度屏蔽，或是使用IP发帖的匿名用户
-    # 离谱的来了，2019年之后哪来的匿名用户？我到底要为这个垃圾产品补充多少的edge case处理？
-
-    nickname_tree = etree.HTML(nickname_response.content)
-    nickname = nickname_tree.xpath('/html/head/title/text()')[0][:-3]
-    if nickname == '百度安': # “百度安全验证”风控
-        raise NotImplementedError
-    cached_nicknames.update({username: nickname})
-    return nickname
 
 
 def get_post_time(post_time_raw, thread_id):
@@ -148,13 +117,10 @@ for i in range(1, MAX_PAGE + 1):
     
         thread_id = re.findall('.+?(?=\?)', url_params)[0]
         post_id = get_post_id(url_params, thread_id)
-        nickname = get_nickname(username, nickname_raw)
-        # 从后台直接获取的昵称中，若该昵称含有emoji，该emoji将显示为一张图片，且存放在另外的标签中。
-        # 为了解决这个问题，需要访问该用户的用户页，从网页标题获取正常的emoji字符。
         post_time = get_post_time(post_time_raw, thread_id)
         operation_time = get_operation_time(
             operation_date_raw, operation_time_raw)
 
-        log_entry = [thread_id, post_id, title, content_preview, media_list, username, nickname,
+        log_entry = [thread_id, post_id, title, content_preview, media_list, username,
                      post_time, operation, operator, operation_time]
         backstage_log.append(log_entry)
