@@ -38,6 +38,8 @@ def get_nickname(username, nickname_raw):
 
     nickname_tree = etree.HTML(nickname_response.content)
     nickname = nickname_tree.xpath('/html/head/title/text()')[0][:-3]
+    if nickname == '百度安': # “百度安全验证”风控
+        raise NotImplementedError
     cached_nicknames.update({username: nickname})
     return nickname
 
