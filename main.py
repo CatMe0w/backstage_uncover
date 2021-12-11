@@ -23,8 +23,8 @@ db.execute('''
     post_time text not null,
     operation text not null,
     operator text not null,
-    operation_time text not null);
-
+    operation_time text not null);''')
+db.execute('''
     create table users(
     entry_id numeric primary key not null,
     avatar text not null,
@@ -32,16 +32,15 @@ db.execute('''
     operation text not null,
     duration text not null,
     operator text not null,
-    operation_time text not null);
-
+    operation_time text not null);''')
+db.execute('''
     create table bawu(
     entry_id numeric primary key not null,
     avatar text not null,
     username text not null,
     operation text not null,
     operator text not null,
-    operation_time text not null);
-''')
+    operation_time text not null);''')
 conn.commit()
 
 
@@ -101,8 +100,8 @@ headers = {
     'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/96.0.4664.45 Safari/537.36',
 }
 
+entry_id = 1
 for i in range(1, MAX_PAGE_POSTS + 1):
-    entry_id = 1
     params = (
         ('stype', ''),
         ('svalue', ''),
@@ -158,8 +157,8 @@ for i in range(1, MAX_PAGE_POSTS + 1):
         entry_id += 1
     conn.commit()
 
+entry_id = 1
 for i in range(1, MAX_PAGE_USERS + 1):
-    entry_id = 1
     params = (
         ('stype', ''),
         ('svalue', ''),
@@ -201,8 +200,8 @@ for i in range(1, MAX_PAGE_USERS + 1):
     conn.commit()
 
 
+entry_id = 1
 for i in range(1, MAX_PAGE_BAWU + 1):
-    entry_id = 1
     params = (
         ('stype', ''),
         ('svalue', ''),
