@@ -53,6 +53,10 @@ def get_post_id(url_params, thread_id):
         return pseudo_post_id
 
 
+def get_media(media_list):
+    return '\n'.join(media_list)
+
+
 def get_post_time(post_time_raw, thread_id):
     # post_time_raw 形如 'MM月dd日 HH:mm'
     month = int(post_time_raw[:2])
@@ -145,11 +149,12 @@ for i in range(1, MAX_PAGE_POSTS + 1):
 
         thread_id = re.findall('.+?(?=\?)', url_params)[0]
         post_id = get_post_id(url_params, thread_id)
+        media = get_media(media_list)
         post_time = get_post_time(post_time_raw, thread_id)
         operation_time = operation_date_raw + ' ' + operation_time_raw
 
         db.execute('insert into posts values(?,?,?,?,?,?,?,?,?,?,?)',
-                  (entry_id, thread_id, post_id, title, content_preview, media_list, username, post_time, operation, operator, operation_time))
+                  (entry_id, thread_id, post_id, title, content_preview, media, username, post_time, operation, operator, operation_time))
         entry_id += 1
     conn.commit()
 
