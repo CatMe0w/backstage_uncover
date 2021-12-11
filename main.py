@@ -58,10 +58,10 @@ def get_media(media_list):
 
 def get_post_time(post_time_raw, thread_id):
     # post_time_raw 形如 'MM月dd日 HH:mm'
-    month = int(post_time_raw[:2])
-    day = int(post_time_raw[3:5])
-    hour = int(post_time_raw[7:9])
-    minute = int(post_time_raw[10:12])
+    month = post_time_raw[:2]
+    day = post_time_raw[3:5]
+    hour = post_time_raw[7:9]
+    minute = post_time_raw[10:12]
     p = int(thread_id)
     if p < 966676089:
         raise NotImplementedError
