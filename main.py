@@ -59,37 +59,64 @@ def get_media(media_list):
     return '\n'.join(media_list)
 
 
-def get_post_time(post_time_raw, thread_id):
+def get_post_time(post_time_raw, thread_id, post_id):
     # post_time_raw 形如 'MM月dd日 HH:mm'
     month = post_time_raw[:2]
     day = post_time_raw[3:5]
     hour = post_time_raw[7:9]
     minute = post_time_raw[10:12]
-    p = int(thread_id)
-    if p < 966676089:
+    t = int(thread_id)
+    if t < 966676089:
         raise NotImplementedError
-    elif p < 1347023954:
+    elif t < 1347023954:
         year = 2011
-    elif p < 2076654372:
+    elif t < 2076654372:
         year = 2012
-    elif p < 2790164985:
+    elif t < 2790164985:
         year = 2013
-    elif p < 3499710968:
+    elif t < 3499710968:
         year = 2014
-    elif p < 4243777598:
+    elif t < 4243777606:
         year = 2015
-    elif p < 4922225497:
+    elif t < 4922225497:
         year = 2016
-    elif p < 5499472409:
+    elif t < 5499472409:
         year = 2017
-    elif p < 5994564429:
+    elif t < 5994564429:
         year = 2018
-    elif p < 6421708311:
+    elif t < 6421708311:
         year = 2019
-    elif p < 7175996965:
+    elif t < 7175996965:
         year = 2020
     else:
         year = 2021
+
+    if post_id != None:
+        p = int(post_id)
+        if p < 10820694325:
+            raise NotImplementedError
+        elif p < 16286454017:
+            year = 2011
+        elif p < 27783085247:
+            year = 2012
+        elif p < 43785897735:
+            year = 2013
+        elif p < 62390144947:
+            year = 2014
+        elif p < 81567711037:
+            year = 2015
+        elif p < 102026421151:
+            year = 2016
+        elif p < 116661024725:
+            year = 2017
+        elif p < 123468282107:
+            year = 2018
+        elif p < 129138716997:
+            year = 2019
+        elif p < 137282019373:
+            year = 2020
+        else:
+            year = 2021
     # Oh, FUCK BAIDU!
     # 这些数字是整个百度贴吧产品每年第一个帖子的id
     # 百度没有为后台日志显示的发帖时间提供年份，因此不得不通过硬编码这些数字的方式来推算出正确的年份。
@@ -162,7 +189,7 @@ for i in range(1, MAX_PAGE_POSTS + 1):
         thread_id = re.findall('.+?(?=\?)', url_params)[0]
         post_id = get_post_id(url_params, thread_id, title)
         media = get_media(media_list)
-        post_time = get_post_time(post_time_raw, thread_id)
+        post_time = get_post_time(post_time_raw, thread_id, post_id)
         operation_time = operation_date_raw + ' ' + operation_time_raw
 
         db.execute('insert into posts values(?,?,?,?,?,?,?,?,?,?,?)',
