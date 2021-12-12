@@ -1,4 +1,5 @@
 import re
+import time
 import requests
 from lxml import etree
 import sqlite3
@@ -111,8 +112,18 @@ for i in range(1, MAX_PAGE_POSTS + 1):
         ('word', TIEBA_NAME),
         ('pn', str(i)),
     )
-    response = requests.get('http://tieba.baidu.com/bawu2/platform/listPostLog',
-                            headers=headers, params=params, cookies=cookies, verify=False)
+
+    while True:
+        try:
+            print("Current page: posts, " + str(i))
+            response = requests.get('http://tieba.baidu.com/bawu2/platform/listPostLog',
+                                    headers=headers, params=params, cookies=cookies, verify=False)
+        except:
+            print("Remote is not responding, sleep for 30s.")
+            time.sleep(30)
+            continue
+        else:
+            break
     with open('./posts/{}.html'.format(i), 'wb') as f:
         f.write(response.content)
 
@@ -153,7 +164,7 @@ for i in range(1, MAX_PAGE_POSTS + 1):
         operation_time = operation_date_raw + ' ' + operation_time_raw
 
         db.execute('insert into posts values(?,?,?,?,?,?,?,?,?,?,?)',
-                  (entry_id, thread_id, post_id, title, content_preview, media, username, post_time, operation, operator, operation_time))
+                   (entry_id, thread_id, post_id, title, content_preview, media, username, post_time, operation, operator, operation_time))
         entry_id += 1
     conn.commit()
 
@@ -169,8 +180,17 @@ for i in range(1, MAX_PAGE_USERS + 1):
         ('pn', str(i)),
     )
 
-    response = requests.get('http://tieba.baidu.com/bawu2/platform/listUserLog',
-                            headers=headers, params=params, cookies=cookies, verify=False)
+    while True:
+        try:
+            print("Current page: users, " + str(i))
+            response = requests.get('http://tieba.baidu.com/bawu2/platform/listUserLog',
+                                    headers=headers, params=params, cookies=cookies, verify=False)
+        except:
+            print("Remote is not responding, sleep for 30s.")
+            time.sleep(30)
+            continue
+        else:
+            break
     with open('./users/{}.html'.format(i), 'wb') as f:
         f.write(response.content)
 
@@ -195,7 +215,7 @@ for i in range(1, MAX_PAGE_USERS + 1):
         # 同上
 
         db.execute('insert into users values(?,?,?,?,?,?,?)',
-                  (entry_id, avatar, username, operation, duration, operator, operation_time))
+                   (entry_id, avatar, username, operation, duration, operator, operation_time))
         entry_id += 1
     conn.commit()
 
@@ -212,8 +232,17 @@ for i in range(1, MAX_PAGE_BAWU + 1):
         ('pn', str(i)),
     )
 
-    response = requests.get('http://tieba.baidu.com/bawu2/platform/listBawuLog',
-                            headers=headers, params=params, cookies=cookies, verify=False)
+    while True:
+        try:
+            print("Current page: bawu, " + str(i))
+            response = requests.get('http://tieba.baidu.com/bawu2/platform/listBawuLog',
+                                    headers=headers, params=params, cookies=cookies, verify=False)
+        except:
+            print("Remote is not responding, sleep for 30s.")
+            time.sleep(30)
+            continue
+        else:
+            break
     with open('./bawu/{}.html'.format(i), 'wb') as f:
         f.write(response.content)
 
@@ -236,7 +265,7 @@ for i in range(1, MAX_PAGE_BAWU + 1):
         # 同上
 
         db.execute('insert into bawu values(?,?,?,?,?,?)',
-                  (entry_id, avatar, username, operation, operator, operation_time))
+                   (entry_id, avatar, username, operation, operator, operation_time))
         entry_id += 1
     conn.commit()
 
