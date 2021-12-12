@@ -14,11 +14,10 @@ conn = sqlite3.connect('uncover.db')
 db = conn.cursor()
 db.execute('''
     create table posts(
-    entry_id numeric primary key not null,
     thread_id numeric not null, 
-    post_id numeric ,
+    post_id numeric,
     title text not null,
-    content_preview text,
+    content_preview text not null,
     media text,
     username text not null,
     post_time text not null,
@@ -27,7 +26,6 @@ db.execute('''
     operation_time text not null);''')
 db.execute('''
     create table users(
-    entry_id numeric primary key not null,
     avatar text not null,
     username text not null,
     operation text not null,
@@ -36,7 +34,6 @@ db.execute('''
     operation_time text not null);''')
 db.execute('''
     create table bawu(
-    entry_id numeric primary key not null,
     avatar text not null,
     username text not null,
     operation text not null,
@@ -56,6 +53,8 @@ def get_post_id(url_params, thread_id, title):
 
 
 def get_media(media_list):
+    if media_list == []:
+        return None
     return '\n'.join(media_list)
 
 
@@ -130,7 +129,6 @@ headers = {
     'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/96.0.4664.45 Safari/537.36',
 }
 
-entry_id = 1
 for i in range(1, MAX_PAGE_POSTS + 1):
     params = (
         ('stype', ''),
@@ -192,12 +190,10 @@ for i in range(1, MAX_PAGE_POSTS + 1):
         post_time = get_post_time(post_time_raw, thread_id, post_id)
         operation_time = operation_date_raw + ' ' + operation_time_raw
 
-        db.execute('insert into posts values(?,?,?,?,?,?,?,?,?,?,?)',
-                   (entry_id, thread_id, post_id, title, content_preview, media, username, post_time, operation, operator, operation_time))
-        entry_id += 1
+        db.execute('insert into posts values(?,?,?,?,?,?,?,?,?,?)',
+                   (thread_id, post_id, title, content_preview, media, username, post_time, operation, operator, operation_time))
     conn.commit()
 
-entry_id = 1
 for i in range(1, MAX_PAGE_USERS + 1):
     params = (
         ('stype', ''),
@@ -246,13 +242,10 @@ for i in range(1, MAX_PAGE_USERS + 1):
         if duration == '--' or duration == '':
             duration = None
 
-        db.execute('insert into users values(?,?,?,?,?,?,?)',
-                   (entry_id, avatar, username, operation, duration, operator, operation_time))
-        entry_id += 1
+        db.execute('insert into users values(?,?,?,?,?,?)',
+                   (avatar, username, operation, duration, operator, operation_time))
     conn.commit()
 
-
-entry_id = 1
 for i in range(1, MAX_PAGE_BAWU + 1):
     params = (
         ('stype', ''),
@@ -296,9 +289,8 @@ for i in range(1, MAX_PAGE_BAWU + 1):
             continue
         # 同上
 
-        db.execute('insert into bawu values(?,?,?,?,?,?)',
-                   (entry_id, avatar, username, operation, operator, operation_time))
-        entry_id += 1
+        db.execute('insert into bawu values(?,?,?,?,?)',
+                   (avatar, username, operation, operator, operation_time))
     conn.commit()
 
 conn.close()
