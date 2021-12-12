@@ -31,7 +31,7 @@ db.execute('''
     avatar text not null,
     username text not null,
     operation text not null,
-    duration text not null,
+    duration text,
     operator text not null,
     operation_time text not null);''')
 db.execute('''
@@ -45,7 +45,9 @@ db.execute('''
 conn.commit()
 
 
-def get_post_id(url_params, thread_id):
+def get_post_id(url_params, thread_id, title):
+    if title[:3] != '回复：':
+        return None
     pseudo_post_id = re.findall('(?<=#).*', url_params)[0]
     if pseudo_post_id == thread_id:
         return None
@@ -158,7 +160,7 @@ for i in range(1, MAX_PAGE_POSTS + 1):
         # 正常情况下，一页日志共有30项记录，但个别页可能出现少于30项的情况
 
         thread_id = re.findall('.+?(?=\?)', url_params)[0]
-        post_id = get_post_id(url_params, thread_id)
+        post_id = get_post_id(url_params, thread_id, title)
         media = get_media(media_list)
         post_time = get_post_time(post_time_raw, thread_id)
         operation_time = operation_date_raw + ' ' + operation_time_raw
@@ -213,6 +215,9 @@ for i in range(1, MAX_PAGE_USERS + 1):
         except IndexError:
             continue
         # 同上
+
+        if duration == '--' or duration == '':
+            duration = None
 
         db.execute('insert into users values(?,?,?,?,?,?,?)',
                    (entry_id, avatar, username, operation, duration, operator, operation_time))
