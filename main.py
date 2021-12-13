@@ -2,6 +2,7 @@ import re
 import time
 import requests
 from lxml import etree
+from pathlib import Path
 import sqlite3
 
 TIEBA_NAME = ''
@@ -9,6 +10,10 @@ BDUSS = ''
 MAX_PAGE_POSTS = 1
 MAX_PAGE_USERS = 1
 MAX_PAGE_BAWU = 1  # 百度的HTML中，原文如此。指“吧务”（人事变动）日志。
+
+Path("./uncover-raw/posts").mkdir(parents=True, exist_ok=True)
+Path("./uncover-raw/users").mkdir(parents=True, exist_ok=True)
+Path("./uncover-raw/bawu").mkdir(parents=True, exist_ok=True)
 
 conn = sqlite3.connect('uncover.db')
 db = conn.cursor()
@@ -151,7 +156,7 @@ for i in range(1, MAX_PAGE_POSTS + 1):
             continue
         else:
             break
-    with open('./posts/{}.html'.format(i), 'wb') as f:
+    with open('./uncover-raw/posts/{}.html'.format(i), 'wb') as f:
         f.write(response.content)
 
     content = response.content.decode('gbk')
@@ -216,7 +221,7 @@ for i in range(1, MAX_PAGE_USERS + 1):
             continue
         else:
             break
-    with open('./users/{}.html'.format(i), 'wb') as f:
+    with open('./uncover-raw/users/{}.html'.format(i), 'wb') as f:
         f.write(response.content)
 
     content = response.content.decode('gbk')
@@ -268,7 +273,7 @@ for i in range(1, MAX_PAGE_BAWU + 1):
             continue
         else:
             break
-    with open('./bawu/{}.html'.format(i), 'wb') as f:
+    with open('./uncover-raw/bawu/{}.html'.format(i), 'wb') as f:
         f.write(response.content)
 
     content = response.content.decode('gbk')
