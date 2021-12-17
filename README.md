@@ -19,10 +19,10 @@ Tables:
 |content_preview|text|Content preview of the initial post of a thread|
 |media|text|Link(s) of embedded pictures and videos|
 |username|text||
-|post_time|text|UTC+8|
+|post_time|text|UTC+8, yyyy-MM-dd HH:mm|
 |operation|text||
 |operator|text||
-|operation_time|text|UTC+8|
+|operation_time|text|UTC+8, yyyy-MM-dd HH:mm|
 
 `users`: Logs about users being banned or unbanned
 |Key|Type|Note|
@@ -32,7 +32,7 @@ Tables:
 |operation|text||
 |duration|text||
 |operator|text||
-|operation_time|text|UTC+8|
+|operation_time|text|UTC+8, yyyy-MM-dd HH:mm|
 
 `bawu`: lit. "staff". Logs about changes of staff
 |Key|Type|Note|
@@ -41,7 +41,7 @@ Tables:
 |username|text||
 |operation|text||
 |operator|text||
-|operation_time|text|UTC+8|
+|operation_time|text|UTC+8, yyyy-MM-dd HH:mm|
 
 ## License
 [MIT License](https://opensource.org/licenses/MIT)
