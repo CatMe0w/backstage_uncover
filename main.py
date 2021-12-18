@@ -19,7 +19,7 @@ conn = sqlite3.connect('uncover.db')
 db = conn.cursor()
 db.execute('''
     create table posts(
-    thread_id numeric not null, 
+    thread_id numeric not null,
     post_id numeric,
     title text not null,
     content_preview text not null,
@@ -95,7 +95,7 @@ def get_post_time(post_time_raw, thread_id, post_id):
     else:
         year = 2021
 
-    if post_id != None:
+    if post_id is not None:
         p = int(post_id)
         if p < 10820694325:
             raise NotImplementedError
