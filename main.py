@@ -150,7 +150,7 @@ for i in range(1, MAX_PAGE_POSTS + 1):
             print("Current page: posts, " + str(i))
             response = requests.get('http://tieba.baidu.com/bawu2/platform/listPostLog',
                                     headers=headers, params=params, cookies=cookies, verify=False)
-        except:
+        except requests.exceptions.Timeout:
             print("Remote is not responding, sleep for 30s.")
             time.sleep(30)
             continue
@@ -215,7 +215,7 @@ for i in range(1, MAX_PAGE_USERS + 1):
             print("Current page: users, " + str(i))
             response = requests.get('http://tieba.baidu.com/bawu2/platform/listUserLog',
                                     headers=headers, params=params, cookies=cookies, verify=False)
-        except:
+        except requests.exceptions.Timeout:
             print("Remote is not responding, sleep for 30s.")
             time.sleep(30)
             continue
@@ -267,7 +267,7 @@ for i in range(1, MAX_PAGE_BAWU + 1):
             print("Current page: bawu, " + str(i))
             response = requests.get('http://tieba.baidu.com/bawu2/platform/listBawuLog',
                                     headers=headers, params=params, cookies=cookies, verify=False)
-        except:
+        except requests.exceptions.Timeout:
             print("Remote is not responding, sleep for 30s.")
             time.sleep(30)
             continue
