@@ -11,41 +11,6 @@ MAX_PAGE_POSTS = 1
 MAX_PAGE_USERS = 1
 MAX_PAGE_BAWU = 1  # 百度的HTML中，原文如此。指“吧务”（人事变动）日志。
 
-Path("./uncover-raw/posts").mkdir(parents=True, exist_ok=True)
-Path("./uncover-raw/users").mkdir(parents=True, exist_ok=True)
-Path("./uncover-raw/bawu").mkdir(parents=True, exist_ok=True)
-
-conn = sqlite3.connect('uncover.db')
-db = conn.cursor()
-db.execute('''
-    create table posts(
-    thread_id numeric not null,
-    post_id numeric,
-    title text not null,
-    content_preview text not null,
-    media text,
-    username text not null,
-    post_time text not null,
-    operation text not null,
-    operator text not null,
-    operation_time text not null);''')
-db.execute('''
-    create table users(
-    avatar text not null,
-    username text not null,
-    operation text not null,
-    duration text,
-    operator text not null,
-    operation_time text not null);''')
-db.execute('''
-    create table bawu(
-    avatar text not null,
-    username text not null,
-    operation text not null,
-    operator text not null,
-    operation_time text not null);''')
-conn.commit()
-
 
 def get_post_id(url_params, thread_id, title):
     if title[:3] != '回复：':
@@ -126,6 +91,52 @@ def get_post_time(post_time_raw, thread_id, post_id):
     # 百度没有为后台日志显示的发帖时间提供年份，因此不得不通过硬编码这些数字的方式来推算出正确的年份。
     return '{}-{}-{} {}:{}'.format(year, month, day, hour, minute)
 
+
+print("""
+Starting backstage_uncover
+
+Target: {}
+Pages of posts: {}
+Pages of users: {}
+Pages of bawu: {}
+
+Weigh anchor!
+""".format(TIEBA_NAME, MAX_PAGE_POSTS, MAX_PAGE_USERS, MAX_PAGE_BAWU))
+
+Path("./uncover-raw/posts").mkdir(parents=True, exist_ok=True)
+Path("./uncover-raw/users").mkdir(parents=True, exist_ok=True)
+Path("./uncover-raw/bawu").mkdir(parents=True, exist_ok=True)
+
+conn = sqlite3.connect('uncover.db')
+db = conn.cursor()
+db.execute('''
+    create table posts(
+    thread_id numeric not null,
+    post_id numeric,
+    title text not null,
+    content_preview text not null,
+    media text,
+    username text not null,
+    post_time text not null,
+    operation text not null,
+    operator text not null,
+    operation_time text not null);''')
+db.execute('''
+    create table users(
+    avatar text not null,
+    username text not null,
+    operation text not null,
+    duration text,
+    operator text not null,
+    operation_time text not null);''')
+db.execute('''
+    create table bawu(
+    avatar text not null,
+    username text not null,
+    operation text not null,
+    operator text not null,
+    operation_time text not null);''')
+conn.commit()
 
 cookies = {
     'BDUSS': BDUSS,
