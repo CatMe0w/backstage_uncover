@@ -1,4 +1,3 @@
-import re
 import time
 import requests
 from lxml import etree
@@ -15,7 +14,7 @@ MAX_PAGE_BAWU = 1  # 百度的HTML中，原文如此。指“吧务”（人事�
 def get_post_id(url_params, thread_id, title):
     if title[:3] != '回复：':
         return None
-    pseudo_post_id = re.findall('(?<=#).*', url_params)[0]
+    pseudo_post_id = url_params.split('#')[-1]
     if pseudo_post_id == thread_id:
         return None
     else:
@@ -175,7 +174,7 @@ for i in range(1, MAX_PAGE_POSTS + 1):
     for j in range(1, 31):
         try:
             url_params = tree.xpath(
-                '//*[@id="container"]/div[2]/div[2]/table/tbody/tr[{}]/td[1]/article/div[2]/h1/a/@href'.format(j))[0][3:]
+                '//*[@id="container"]/div[2]/div[2]/table/tbody/tr[{}]/td[1]/article/div[2]/h1/a/@href'.format(j))[0]
             title = tree.xpath(
                 '//*[@id="container"]/div[2]/div[2]/table/tbody/tr[{}]/td[1]/article/div[2]/h1/a/@title'.format(j))[0]
             content_preview = tree.xpath(
@@ -200,7 +199,7 @@ for i in range(1, MAX_PAGE_POSTS + 1):
             continue
         # 正常情况下，一页日志共有30项记录，但个别页可能出现少于30项的情况
 
-        thread_id = re.findall('.+?(?=\?)', url_params)[0]
+        thread_id = url_params.split('/')[-1].split('?')[0]
         post_id = get_post_id(url_params, thread_id, title)
         media = get_media(media_list)
         post_time = get_post_time(post_time_raw, thread_id, post_id)
