@@ -1,4 +1,6 @@
 # backstage_uncover
+中文版请见[这里](https://github.com/CatMe0w/backstage_uncover/blob/master/README_zh.md)。
+
 A tool to extract all logs from admin panels ("[backstages](https://github.com/52fisher/TiebaPublicBackstage)") of Baidu Tieba.
 
 ## File strcutures
