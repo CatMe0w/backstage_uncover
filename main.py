@@ -109,7 +109,7 @@ Path("./uncover-raw/bawu").mkdir(parents=True, exist_ok=True)
 conn = sqlite3.connect('uncover.db')
 db = conn.cursor()
 db.execute('''
-    create table posts(
+    create table post(
     thread_id numeric not null,
     post_id numeric,
     title text not null,
@@ -121,7 +121,7 @@ db.execute('''
     operator text not null,
     operation_time text not null);''')
 db.execute('''
-    create table users(
+    create table user(
     avatar text not null,
     username text not null,
     operation text not null,
@@ -205,7 +205,7 @@ for i in range(1, MAX_PAGE_POSTS + 1):
         post_time = get_post_time(post_time_raw, thread_id, post_id)
         operation_time = operation_date_raw + ' ' + operation_time_raw
 
-        db.execute('insert into posts values(?,?,?,?,?,?,?,?,?,?)',
+        db.execute('insert into post values(?,?,?,?,?,?,?,?,?,?)',
                    (thread_id, post_id, title, content_preview, media, username, post_time, operation, operator, operation_time))
     conn.commit()
 
@@ -257,7 +257,7 @@ for i in range(1, MAX_PAGE_USERS + 1):
         if duration == '--' or duration == '':
             duration = None
 
-        db.execute('insert into users values(?,?,?,?,?,?)',
+        db.execute('insert into user values(?,?,?,?,?,?)',
                    (avatar, username, operation, duration, operator, operation_time))
     conn.commit()
 
