@@ -22,7 +22,7 @@ def get_post_id(url_params, thread_id, title):
 
 
 def get_media(media_list):
-    if media_list == []:
+    if not media_list:
         return None
     return '\n'.join(media_list)
 
