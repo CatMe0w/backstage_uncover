@@ -1,6 +1,7 @@
 import sys
 import time
 import sqlite3
+import logging
 import requests
 from lxml import etree
 from pathlib import Path
@@ -87,7 +88,15 @@ def get_post_time(post_time_raw, thread_id, post_id):
 
 
 def main(tieba_name, max_page_posts, max_page_users, max_page_bawu, bduss):
-    print("""
+    logging.basicConfig(
+        format='%(asctime)s [%(levelname)s] %(message)s',
+        level=logging.INFO,
+        handlers=[
+            logging.FileHandler("uncover.log"),
+            logging.StreamHandler()
+        ])
+
+    logging.info("""
     Starting backstage_uncover
     
     Target: {}
@@ -153,11 +162,11 @@ def main(tieba_name, max_page_posts, max_page_users, max_page_bawu, bduss):
 
         while True:
             try:
-                print("Current page: posts, " + str(i))
+                logging.info("Current page: posts, " + str(i))
                 response = requests.get('http://tieba.baidu.com/bawu2/platform/listPostLog',
                                         headers=headers, params=params, cookies=cookies, verify=False)
             except requests.exceptions.Timeout:
-                print("Remote is not responding, sleep for 30s.")
+                logging.warning("Remote is not responding, sleep for 30s.")
                 time.sleep(30)
                 continue
             else:
@@ -218,11 +227,11 @@ def main(tieba_name, max_page_posts, max_page_users, max_page_bawu, bduss):
 
         while True:
             try:
-                print("Current page: users, " + str(i))
+                logging.info("Current page: users, " + str(i))
                 response = requests.get('http://tieba.baidu.com/bawu2/platform/listUserLog',
                                         headers=headers, params=params, cookies=cookies, verify=False)
             except requests.exceptions.Timeout:
-                print("Remote is not responding, sleep for 30s.")
+                logging.warning("Remote is not responding, sleep for 30s.")
                 time.sleep(30)
                 continue
             else:
@@ -270,11 +279,11 @@ def main(tieba_name, max_page_posts, max_page_users, max_page_bawu, bduss):
 
         while True:
             try:
-                print("Current page: bawu, " + str(i))
+                logging.info("Current page: bawu, " + str(i))
                 response = requests.get('http://tieba.baidu.com/bawu2/platform/listBawuLog',
                                         headers=headers, params=params, cookies=cookies, verify=False)
             except requests.exceptions.Timeout:
-                print("Remote is not responding, sleep for 30s.")
+                logging.warning("Remote is not responding, sleep for 30s.")
                 time.sleep(30)
                 continue
             else:
@@ -305,6 +314,7 @@ def main(tieba_name, max_page_posts, max_page_users, max_page_bawu, bduss):
         conn.commit()
 
     conn.close()
+    logging.info('All done! Have fun!')
 
 
 if __name__ == '__main__':
