@@ -52,8 +52,10 @@ def get_post_time(post_time_raw, thread_id, post_id):
         year = 2019
     elif t < 7175996965:
         year = 2020
-    else:
+    elif t < 7679713980:
         year = 2021
+    else:
+        year = 2022
 
     if post_id is not None:
         p = int(post_id)
@@ -79,8 +81,10 @@ def get_post_time(post_time_raw, thread_id, post_id):
             year = 2019
         elif p < 137282019373:
             year = 2020
-        else:
+        elif p < 142697363810:
             year = 2021
+        else:
+            year = 2022
     # Oh, FUCK BAIDU!
     # 这些数字是整个百度贴吧产品每年第一个帖子的id
     # 百度没有为后台日志显示的发帖时间提供年份，因此不得不通过硬编码这些数字的方式来推算出正确的年份。
