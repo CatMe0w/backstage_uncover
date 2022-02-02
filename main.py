@@ -153,6 +153,8 @@ def main(tieba_name, max_page_posts, max_page_users, max_page_bawu, bduss):
         'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/96.0.4664.45 Safari/537.36',
     }
 
+    session = requests.Session()
+
     for i in range(1, max_page_posts + 1):
         params = (
             ('stype', ''),
@@ -167,8 +169,8 @@ def main(tieba_name, max_page_posts, max_page_users, max_page_bawu, bduss):
         while True:
             try:
                 logging.info("Current page: posts, " + str(i))
-                response = requests.get('http://tieba.baidu.com/bawu2/platform/listPostLog',
-                                        headers=headers, params=params, cookies=cookies, verify=False)
+                response = session.get('http://tieba.baidu.com/bawu2/platform/listPostLog',
+                                       headers=headers, params=params, cookies=cookies, verify=False)
             except requests.exceptions.Timeout:
                 logging.warning("Remote is not responding, sleep for 30s.")
                 time.sleep(30)
@@ -232,8 +234,8 @@ def main(tieba_name, max_page_posts, max_page_users, max_page_bawu, bduss):
         while True:
             try:
                 logging.info("Current page: users, " + str(i))
-                response = requests.get('http://tieba.baidu.com/bawu2/platform/listUserLog',
-                                        headers=headers, params=params, cookies=cookies, verify=False)
+                response = session.get('http://tieba.baidu.com/bawu2/platform/listUserLog',
+                                       headers=headers, params=params, cookies=cookies, verify=False)
             except requests.exceptions.Timeout:
                 logging.warning("Remote is not responding, sleep for 30s.")
                 time.sleep(30)
@@ -284,8 +286,8 @@ def main(tieba_name, max_page_posts, max_page_users, max_page_bawu, bduss):
         while True:
             try:
                 logging.info("Current page: bawu, " + str(i))
-                response = requests.get('http://tieba.baidu.com/bawu2/platform/listBawuLog',
-                                        headers=headers, params=params, cookies=cookies, verify=False)
+                response = session.get('http://tieba.baidu.com/bawu2/platform/listBawuLog',
+                                       headers=headers, params=params, cookies=cookies, verify=False)
             except requests.exceptions.Timeout:
                 logging.warning("Remote is not responding, sleep for 30s.")
                 time.sleep(30)
