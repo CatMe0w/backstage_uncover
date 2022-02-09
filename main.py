@@ -91,7 +91,7 @@ def get_post_time(post_time_raw, thread_id, post_id):
     return '{}-{}-{} {}:{}'.format(year, month, day, hour, minute)
 
 
-def main(tieba_name, max_page_posts, max_page_users, max_page_bawu, bduss):
+def main(tieba_name, bduss):
     logging.basicConfig(
         format='%(asctime)s [%(levelname)s] %(message)s',
         level=logging.INFO,
@@ -104,12 +104,9 @@ def main(tieba_name, max_page_posts, max_page_users, max_page_bawu, bduss):
     Starting backstage_uncover
     
     Target: {}
-    Pages of posts: {}
-    Pages of users: {}
-    Pages of bawu: {}
     
     Weigh anchor!
-    """.format(tieba_name, max_page_posts, max_page_users, max_page_bawu))
+    """.format(tieba_name))
 
     Path("./uncover-raw/posts").mkdir(parents=True, exist_ok=True)
     Path("./uncover-raw/users").mkdir(parents=True, exist_ok=True)
@@ -155,7 +152,8 @@ def main(tieba_name, max_page_posts, max_page_users, max_page_bawu, bduss):
 
     session = requests.Session()
 
-    for i in range(1, max_page_posts + 1):
+    page = 1
+    while True:
         params = (
             ('stype', ''),
             ('svalue', ''),
@@ -163,21 +161,21 @@ def main(tieba_name, max_page_posts, max_page_users, max_page_bawu, bduss):
             ('end', ''),
             ('op_type', ''),
             ('word', tieba_name),
-            ('pn', str(i)),
+            ('pn', str(page)),
         )
 
         while True:
             try:
-                logging.info("Current page: posts, " + str(i))
+                logging.info("Current page: posts, " + str(page))
                 response = session.get('http://tieba.baidu.com/bawu2/platform/listPostLog',
-                                       headers=headers, params=params, cookies=cookies, verify=False)
+                                       headers=headers, params=params, cookies=cookies)
             except requests.exceptions.Timeout:
                 logging.warning("Remote is not responding, sleep for 30s.")
                 time.sleep(30)
                 continue
             else:
                 break
-        with open('./uncover-raw/posts/{}.html'.format(i), 'wb') as f:
+        with open('./uncover-raw/posts/{}.html'.format(page), 'wb') as f:
             f.write(response.content)
 
         content = response.content.decode('gbk')
@@ -220,7 +218,16 @@ def main(tieba_name, max_page_posts, max_page_users, max_page_bawu, bduss):
                        (thread_id, post_id, title, content_preview, media, username, post_time, operation, operator, operation_time))
         conn.commit()
 
-    for i in range(1, max_page_users + 1):
+        if page == 1:
+            max_page = int(tree.xpath('//*[@id="container"]/div[2]/div[2]/div[2]/span/text()')[0].strip('共').strip('页'))
+            logging.info('Pages of posts: {}'.format(max_page))
+        if page == max_page:
+            break
+        else:
+            page += 1
+
+    page = 1
+    while True:
         params = (
             ('stype', ''),
             ('svalue', ''),
@@ -228,21 +235,21 @@ def main(tieba_name, max_page_posts, max_page_users, max_page_bawu, bduss):
             ('end', ''),
             ('op_type', ''),
             ('word', tieba_name),
-            ('pn', str(i)),
+            ('pn', str(page)),
         )
 
         while True:
             try:
-                logging.info("Current page: users, " + str(i))
+                logging.info("Current page: users, " + str(page))
                 response = session.get('http://tieba.baidu.com/bawu2/platform/listUserLog',
-                                       headers=headers, params=params, cookies=cookies, verify=False)
+                                       headers=headers, params=params, cookies=cookies)
             except requests.exceptions.Timeout:
                 logging.warning("Remote is not responding, sleep for 30s.")
                 time.sleep(30)
                 continue
             else:
                 break
-        with open('./uncover-raw/users/{}.html'.format(i), 'wb') as f:
+        with open('./uncover-raw/users/{}.html'.format(page), 'wb') as f:
             f.write(response.content)
 
         content = response.content.decode('gbk')
@@ -272,7 +279,16 @@ def main(tieba_name, max_page_posts, max_page_users, max_page_bawu, bduss):
                        (avatar, username, operation, duration, operator, operation_time))
         conn.commit()
 
-    for i in range(1, max_page_bawu + 1):
+        if page == 1:
+            max_page = int(tree.xpath('//*[@id="container"]/div[2]/div[2]/div[2]/span/text()')[0].strip('共').strip('页'))
+            logging.info('Pages of users: {}'.format(max_page))
+        if page == max_page:
+            break
+        else:
+            page += 1
+
+    page = 1
+    while True:
         params = (
             ('stype', ''),
             ('svalue', ''),
@@ -280,21 +296,21 @@ def main(tieba_name, max_page_posts, max_page_users, max_page_bawu, bduss):
             ('end', ''),
             ('op_type', ''),
             ('word', tieba_name),
-            ('pn', str(i)),
+            ('pn', str(page)),
         )
 
         while True:
             try:
-                logging.info("Current page: bawu, " + str(i))
+                logging.info("Current page: bawu, " + str(page))
                 response = session.get('http://tieba.baidu.com/bawu2/platform/listBawuLog',
-                                       headers=headers, params=params, cookies=cookies, verify=False)
+                                       headers=headers, params=params, cookies=cookies)
             except requests.exceptions.Timeout:
                 logging.warning("Remote is not responding, sleep for 30s.")
                 time.sleep(30)
                 continue
             else:
                 break
-        with open('./uncover-raw/bawu/{}.html'.format(i), 'wb') as f:
+        with open('./uncover-raw/bawu/{}.html'.format(page), 'wb') as f:
             f.write(response.content)
 
         content = response.content.decode('gbk')
@@ -319,12 +335,20 @@ def main(tieba_name, max_page_posts, max_page_users, max_page_bawu, bduss):
                        (avatar, username, operation, operator, operation_time))
         conn.commit()
 
+        if page == 1:
+            max_page = int(tree.xpath('//*[@id="container"]/div[2]/div[2]/div[2]/span/text()')[0].strip('共').strip('页'))
+            logging.info('Pages of bawu: {}'.format(max_page))
+        if page == max_page:
+            break
+        else:
+            page += 1
+
     conn.close()
     logging.info('All done! Have fun!')
 
 
 if __name__ == '__main__':
-    if not sys.argv[5:]:
-        print('Usage: python3 {} <tieba_name> <max_page_posts> <max_page_users> <max_page_bawu> <bduss>'.format(sys.argv[0]))
+    if not sys.argv[2:]:
+        print('Usage: python3 {} <tieba_name> <bduss>'.format(sys.argv[0]))
         exit(1)
-    main(str(sys.argv[1]), int(sys.argv[2]), int(sys.argv[3]), int(sys.argv[4]), str(sys.argv[5]))
+    main(str(sys.argv[1]), str(sys.argv[2]))
