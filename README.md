@@ -3,14 +3,26 @@
 
 A tool to extract all logs from admin panels ("[backstages](https://github.com/52fisher/TiebaPublicBackstage)") of Baidu Tieba.
 
+## Install dependencies
+Python 3 is required.
+
+`pip3 install lxml requests`
+
+## Usage
+`python3 main.py <tieba_name> <bduss>`
+
+After logging in any baidu.com products in a browser, `BDUSS` can be extracted from cookies under `baidu.com`.
+
+__Protect `BDUSS` like a password!__
+
 ## File strcutures
 `uncover-raw/`: Raw HTML files of every page
 
 `uncover.db`: SQLite database of parsed data
 
-## Database structures
-Tables: 
+`uncover.log`: Log file
 
+## Database structures
 `posts`: Logs about posts and threads being deleted or restored
 
 |Key|Type|Note|
