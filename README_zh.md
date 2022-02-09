@@ -1,10 +1,24 @@
 # backstage_uncover
 一个用于提取百度贴吧吧务后台完整操作记录的工具。
 
+## 安装依赖
+需要 Python 3。
+
+`pip3 install lxml requests`
+
+## 使用方法
+`python3 main.py <贴吧名> <bduss>`
+
+在浏览器中登录任意百度产品，可在`baidu.com`下的 cookie 中找到 `BDUSS`。
+
+__请像保护密码一样保护 `BDUSS`！__
+
 ## 文件结构
 `uncover-raw/`：每个页面的原始 HTML
 
 `uncover.db`：存有已解析数据的 SQLite 数据库
+
+`uncover.log`: 日志文件
 
 ## 数据库结构
 `posts`：帖子或回复被删除或恢复删除等操作的记录
