@@ -152,6 +152,7 @@ def main(tieba_name, bduss):
 
     session = requests.Session()
 
+    max_page = 1
     page = 1
     while True:
         params = (
