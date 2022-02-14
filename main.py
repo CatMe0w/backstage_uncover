@@ -180,6 +180,10 @@ def main(tieba_name, bduss):
             f.write(response.content)
 
         content = response.content.decode('gbk')
+        if '暂无数据或未搜索到符合条件的记录' in content:
+            logging.warning('Bad response, retrying.')
+            continue
+
         tree = etree.HTML(content)
         for j in range(1, 31):
             try:
@@ -254,6 +258,10 @@ def main(tieba_name, bduss):
             f.write(response.content)
 
         content = response.content.decode('gbk')
+        if '暂无数据或未搜索到符合条件的记录' in content:
+            logging.warning("Bad response, retrying.")
+            continue
+
         tree = etree.HTML(content)
         for j in range(1, 31):
             try:
@@ -315,6 +323,10 @@ def main(tieba_name, bduss):
             f.write(response.content)
 
         content = response.content.decode('gbk')
+        if '暂无数据或未搜索到符合条件的记录' in content:
+            logging.warning('Bad response, retrying.')
+            continue
+
         tree = etree.HTML(content)
         for j in range(1, 31):
             try:
