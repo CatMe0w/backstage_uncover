@@ -167,7 +167,7 @@ def main(tieba_name, bduss):
 
         while True:
             try:
-                logging.info("Current page: posts, " + str(page))
+                logging.info("Current page: posts, {} of {}".format(page, max_page))
                 response = session.get('http://tieba.baidu.com/bawu2/platform/listPostLog',
                                        headers=headers, params=params, cookies=cookies)
             except requests.exceptions.Timeout:
@@ -232,6 +232,7 @@ def main(tieba_name, bduss):
             page += 1
 
     page = 1
+    max_page = 1
     while True:
         params = (
             ('stype', ''),
@@ -245,7 +246,7 @@ def main(tieba_name, bduss):
 
         while True:
             try:
-                logging.info("Current page: users, " + str(page))
+                logging.info('Current page: users, {} of {}'.format(page, max_page))
                 response = session.get('http://tieba.baidu.com/bawu2/platform/listUserLog',
                                        headers=headers, params=params, cookies=cookies)
             except requests.exceptions.Timeout:
@@ -297,6 +298,7 @@ def main(tieba_name, bduss):
             page += 1
 
     page = 1
+    max_page = 1
     while True:
         params = (
             ('stype', ''),
@@ -310,7 +312,7 @@ def main(tieba_name, bduss):
 
         while True:
             try:
-                logging.info("Current page: bawu, " + str(page))
+                logging.info('Current page: bawu, {} of {}'.format(page, max_page))
                 response = session.get('http://tieba.baidu.com/bawu2/platform/listBawuLog',
                                        headers=headers, params=params, cookies=cookies)
             except requests.exceptions.Timeout:
