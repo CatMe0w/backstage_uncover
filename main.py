@@ -96,21 +96,21 @@ def main(tieba_name, bduss):
         format='%(asctime)s [%(levelname)s] %(message)s',
         level=logging.INFO,
         handlers=[
-            logging.FileHandler("uncover.log"),
+            logging.FileHandler('uncover.log'),
             logging.StreamHandler()
         ])
 
-    logging.info("""
+    logging.info('''
     Starting backstage_uncover
     
     Target: {}
     
     Weigh anchor!
-    """.format(tieba_name))
+    '''.format(tieba_name))
 
-    Path("./uncover-raw/posts").mkdir(parents=True, exist_ok=True)
-    Path("./uncover-raw/users").mkdir(parents=True, exist_ok=True)
-    Path("./uncover-raw/bawu").mkdir(parents=True, exist_ok=True)
+    Path('./uncover-raw/posts').mkdir(parents=True, exist_ok=True)
+    Path('./uncover-raw/users').mkdir(parents=True, exist_ok=True)
+    Path('./uncover-raw/bawu').mkdir(parents=True, exist_ok=True)
 
     conn = sqlite3.connect('uncover.db')
     db = conn.cursor()
@@ -171,7 +171,7 @@ def main(tieba_name, bduss):
                 response = session.get('http://tieba.baidu.com/bawu2/platform/listPostLog',
                                        headers=headers, params=params, cookies=cookies)
             except requests.exceptions.Timeout:
-                logging.warning("Remote is not responding, sleep for 30s.")
+                logging.warning('Remote is not responding, sleep for 30s.')
                 time.sleep(30)
                 continue
             else:
@@ -250,7 +250,7 @@ def main(tieba_name, bduss):
                 response = session.get('http://tieba.baidu.com/bawu2/platform/listUserLog',
                                        headers=headers, params=params, cookies=cookies)
             except requests.exceptions.Timeout:
-                logging.warning("Remote is not responding, sleep for 30s.")
+                logging.warning('Remote is not responding, sleep for 30s.')
                 time.sleep(30)
                 continue
             else:
@@ -316,7 +316,7 @@ def main(tieba_name, bduss):
                 response = session.get('http://tieba.baidu.com/bawu2/platform/listBawuLog',
                                        headers=headers, params=params, cookies=cookies)
             except requests.exceptions.Timeout:
-                logging.warning("Remote is not responding, sleep for 30s.")
+                logging.warning('Remote is not responding, sleep for 30s.')
                 time.sleep(30)
                 continue
             else:
