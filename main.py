@@ -139,7 +139,7 @@ def main(tieba_name, bduss):
         avatar text not null,
         username text not null,
         operation text not null,
-        operator text not null,
+        operator text,
         operation_time text not null);''')
     conn.commit()
 
@@ -339,7 +339,11 @@ def main(tieba_name, bduss):
                 operation = tree.xpath(
                     '//*[@id="dataTable"]/tbody/tr[{}]/td[2]/text()'.format(j))[0]
                 operator = tree.xpath(
-                    '//*[@id="dataTable"]/tbody/tr[{}]/td[3]/a/text()'.format(j))[0]
+                    '//*[@id="dataTable"]/tbody/tr[{}]/td[3]/a/text()'.format(j))
+                if operator:
+                    operator = operator[0]
+                else:
+                    operator = None  # 有时这个字段是空的
                 operation_time = tree.xpath(
                     '//*[@id="dataTable"]/tbody/tr[{}]/td[4]/text()'.format(j))[0]
             except IndexError:
