@@ -20,7 +20,7 @@ def get_post_id(url_params, thread_id, title):
 def get_media(media_list):
     if not media_list:
         return None
-    return '\n'.join(media_list)
+    return '\n'.join(media_list).replace('http://', 'https://')
 
 
 def get_post_time(post_time_raw, thread_id, post_id):
@@ -267,7 +267,7 @@ def main(tieba_name, bduss):
         for j in range(1, 31):
             try:
                 avatar = tree.xpath(
-                    '//*[@id="dataTable"]/tbody/tr[{}]/td[1]/a/img/@src'.format(j))[0]
+                    '//*[@id="dataTable"]/tbody/tr[{}]/td[1]/a/img/@src'.format(j))[0].replace('http://', 'https://')
                 username = tree.xpath(
                     '//*[@id="dataTable"]/tbody/tr[{}]/td[1]/a/text()'.format(j))[0][36:]
                 operation = tree.xpath(
@@ -333,7 +333,7 @@ def main(tieba_name, bduss):
         for j in range(1, 31):
             try:
                 avatar = tree.xpath(
-                    '//*[@id="dataTable"]/tbody/tr[{}]/td[1]/a/img/@src'.format(j))[0]
+                    '//*[@id="dataTable"]/tbody/tr[{}]/td[1]/a/img/@src'.format(j))[0].replace('http://', 'https://')
                 username = tree.xpath(
                     '//*[@id="dataTable"]/tbody/tr[{}]/td[1]/a/text()'.format(j))[0][32:]
                 operation = tree.xpath(
