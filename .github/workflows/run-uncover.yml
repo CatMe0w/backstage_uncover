@@ -1,0 +1,42 @@
+name: run-uncover
+
+on:
+  push:
+    tags:
+      - 'trigger-[0-9]*'
+
+jobs:
+  linux-x86_64:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: '3.x'
+
+      - name: Install dependencies
+        run: pip install lxml requests
+
+      - name: Run uncover
+        env:
+          BDUSS: ${{ secrets.BDUSS }}
+        run: python main.py fursuit "$BDUSS"
+
+      - name: Package
+        run: tar Jcf uncover-raw.tar.xz uncover-raw && xz uncover.db && xz uncover.log
+
+      - name: Checksum
+        run: sha256sum uncover-raw.tar.xz uncover.db.xz uncover.log.xz > sha256sums.txt && cat sha256sums.txt
+
+      - name: Release
+        uses: softprops/action-gh-release@v1
+        with:
+          name: The Showdown
+          body_path: sha256sums.txt
+          files: |
+            uncover-raw.tar.xz
+            uncover.db.xz
+            uncover.log.xz
+            sha256sums.txt
