@@ -22,7 +22,7 @@ jobs:
       - name: Run uncover
         env:
           BDUSS: ${{ secrets.BDUSS }}
-        run: python main.py fursuit "$BDUSS"
+        run: python main.py
 
       - name: Package
         run: tar Jcf uncover-raw.tar.xz uncover-raw && xz uncover.db && xz uncover.log
